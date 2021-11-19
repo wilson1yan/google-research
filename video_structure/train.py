@@ -78,15 +78,15 @@ def build_model(cfg, data_shapes):
       input_images[:, 0, Ellipsis],
       observed_keypoints[:, 0, Ellipsis]])
 
-  # Dynamics model:
-  observed_keypoints_stop = tf.keras.layers.Lambda(tf.stop_gradient)(
-      observed_keypoints)
-  dynamics_model = dynamics.build_vrnn(cfg)
-  predicted_keypoints, kl_divergence = dynamics_model(observed_keypoints_stop)
+#   # Dynamics model:
+#   observed_keypoints_stop = tf.keras.layers.Lambda(tf.stop_gradient)(
+#       observed_keypoints)
+#   dynamics_model = dynamics.build_vrnn(cfg)
+#   predicted_keypoints, kl_divergence = dynamics_model(observed_keypoints_stop)
 
   model = tf.keras.Model(
       inputs=[input_images],
-      outputs=[reconstructed_images, observed_keypoints, predicted_keypoints],
+      outputs=[reconstructed_images, observed_keypoints],
       name='autoencoder')
 
   # Losses:
@@ -96,20 +96,22 @@ def build_model(cfg, data_shapes):
       tf.shape(input_images)[0] * tf.shape(input_images)[1])
   model.add_loss(image_loss)
 
+#   separation_loss = losses.temporal_separation_loss(
+#       cfg, observed_keypoints[:, :cfg.observed_steps, Ellipsis])
   separation_loss = losses.temporal_separation_loss(
-      cfg, observed_keypoints[:, :cfg.observed_steps, Ellipsis])
+      cfg, observed_keypoints)
   model.add_loss(cfg.separation_loss_scale * separation_loss)
 
-  vrnn_coord_pred_loss = tf.nn.l2_loss(
-      observed_keypoints_stop - predicted_keypoints)
+#   vrnn_coord_pred_loss = tf.nn.l2_loss(
+#       observed_keypoints_stop - predicted_keypoints)
 
   # Normalize by batch size and sequence length:
-  vrnn_coord_pred_loss /= tf.to_float(
-      tf.shape(input_images)[0] * tf.shape(input_images)[1])
-  model.add_loss(vrnn_coord_pred_loss)
+#   vrnn_coord_pred_loss /= tf.to_float(
+#       tf.shape(input_images)[0] * tf.shape(input_images)[1])
+#   model.add_loss(vrnn_coord_pred_loss)
 
-  kl_loss = tf.reduce_mean(kl_divergence)  # Mean over batch and timesteps.
-  model.add_loss(cfg.kl_loss_scale * kl_loss)
+#   kl_loss = tf.reduce_mean(kl_divergence)  # Mean over batch and timesteps.
+#   model.add_loss(cfg.kl_loss_scale * kl_loss)
 
   return model
 
