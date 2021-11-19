@@ -44,10 +44,10 @@ def get_config():
   cfg = ConfigDict()
 
   # Directories:
-  cfg.dataset = 'debug'
-  cfg.data_dir = 'video_structure/testdata'
-  cfg.train_dir = ''
-  cfg.test_dir = ''
+  cfg.dataset = 'human36m'
+  cfg.data_dir = 'video_structure/human36m'
+  cfg.train_dir = 'train'
+  cfg.test_dir = 'test'
 
   # Architecture:
   cfg.layers_per_scale = 2
@@ -66,13 +66,13 @@ def get_config():
   cfg.predicted_steps = 8
 
   # Keypoint encoding settings:
-  cfg.num_keypoints = 64
+  cfg.num_keypoints = 48
   cfg.heatmap_width = 16
-  cfg.heatmap_regularization = 5.0
+  cfg.heatmap_regularization = 0.01
   cfg.keypoint_width = 1.5
   cfg.num_encoder_filters = 32
-  cfg.separation_loss_scale = 10.0
-  cfg.separation_loss_sigma = 0.1
+  cfg.separation_loss_scale = 0.02
+  cfg.separation_loss_sigma = 0.002
 
   # Dynamics:
   cfg.num_rnn_units = 512
